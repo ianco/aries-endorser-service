@@ -52,6 +52,13 @@ exportEnvironment() {
   export ENDORSER_AUTO_ACCEPT_AUTHORS=${ENDORSER_AUTO_ACCEPT_AUTHORS:-true}
   export ENDORSER_AUTO_ENDORSE_REQUESTS=${ENDORSER_AUTO_ENDORSE_REQUESTS:-true}
 
+  # endorser-admin
+  export ADMIN_WEB_HOST_NAME=http://localhost
+  export ADMIN_WEB_HOST_PORT=8081
+  export ADMIN_WEB_HOST_PORT_EXPOSED=8081
+  export ADMIN_WEB_HOST_TLS=off
+  export ADMIN_API_HOST=endorser-api
+
   # ngrok
   export NGROK_ENDORSER_AGENT_PORT=4040
   export NGROK_ENDORSER_AGENT_PORT_EXPOSED=4057
@@ -103,6 +110,22 @@ exportEnvironment() {
   export CONTROLLER_POSTGRESQL_PASSWORD=password
   export CONTROLLER_POSTGRESQL_PORT=5432
   export CONTROLLER_POSTGRESQL_PORT_EXPOSED=5467
+
+  # keycloak
+  export KEYCLOAK_DB_VENDOR="POSTGRES"
+  export KEYCLOAK_DB_ADDR="keycloak-db"
+  export KEYCLOAK_USER="admin"
+  export KEYCLOAK_PASSWORD="admin"
+  export KEYCLOAK_IMPORT="/tmp/realm-export-docker.json"
+  export KEYCLOAK_LOGLEVEL="WARN"
+  export KEYCLOAK_ROOT_LOGLEVEL="WARN"
+  export KEYCLOAK_SERVICE_PORT="8080"
+  export KEYCLOAK_SERVICE_PORT_EXPOSED="8180"
+
+  # keycloak-db
+  export KEYCLOAK_DB_NAME="keycloak"
+  export KEYCLOAK_DB_USER="keycloak"
+  export KEYCLOAK_DB_PASSWORD="keycloak"
 }
 
 function logs() {

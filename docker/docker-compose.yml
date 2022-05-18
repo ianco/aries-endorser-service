@@ -1,5 +1,21 @@
 version: "3.9"
 services:
+  endorser-admin:
+    build:
+      context: ../endorser-admin
+      dockerfile: Dockerfile.endorser-admin
+    environment:
+      WEB_HOST_NAME: ${ADMIN_WEB_HOST_NAME}
+      WEB_HOST_PORT: ${ADMIN_WEB_HOST_PORT}
+      WEB_HOST_TLS: ${ADMIN_WEB_HOST_TLS}
+      API_HOST: ${ADMIN_API_HOST}
+      API_PORT: ${ENDORSER_SERVICE_PORT}
+    volumes:
+      - ../endorser-admin/public/config/Caddyfile:/etc/caddy/Caddyfile
+      - ../endorser-admin/public/config/admin:/srv/config
+    ports:
+      - ${ADMIN_WEB_HOST_PORT_EXPOSED}:${ADMIN_WEB_HOST_PORT}
+
   ngrok-endorser-agent:
     image: wernight/ngrok
     environment:
@@ -109,6 +125,42 @@ services:
       timeout: 5s
       retries: 5
 
+  #
+  # keycloak service
+  #
+  keycloak:
+    image: jboss/keycloak:12.0.4
+    environment:
+      DB_VENDOR: ${KEYCLOAK_DB_VENDOR}
+      DB_ADDR: ${KEYCLOAK_DB_ADDR}
+      DB_DATABASE: ${KEYCLOAK_DB_NAME}
+      DB_USER: ${KEYCLOAK_DB_USER}
+      DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KEYCLOAK_USER: ${KEYCLOAK_USER}
+      KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+      KEYCLOAK_LOGLEVEL: ${KEYCLOAK_LOGLEVEL}
+      ROOT_LOGLEVEL: ${KEYCLOAK_ROOT_LOGLEVEL}
+      KEYCLOAK_IMPORT: ${KEYCLOAK_IMPORT}
+    volumes:
+      - ../docker/keycloak/config/realm-export-docker.json:/tmp/realm-export-docker.json
+    ports:
+      - ${KEYCLOAK_SERVICE_PORT_EXPOSED}:${KEYCLOAK_SERVICE_PORT}
+    depends_on:
+      - keycloak-db
+
+  #
+  # keycloak-db
+  #
+  keycloak-db:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_USER: ${KEYCLOAK_DB_USER}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      POSTGRES_DB: ${KEYCLOAK_DB_NAME}
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+
 volumes:
   endorser-wallet:
   endorser-controller:
+  keycloak-db-data:
